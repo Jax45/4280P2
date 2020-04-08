@@ -1,0 +1,56 @@
+I am using Option 3(FSA Table + driver)
+Jackson Hoenig
+CMP SCI 4280-02
+3/13/2020
+Project 1
+
+Description:
+This project's purpose was to create a Scanner for the compiler we are building
+incrementally. This scanner is meant to recognize a new language the
+class has been given to compile. The Scanner is called from a driver function
+in main.cpp for all tokens until it gets an EOF token. The Scanner
+uses an FSA table that is within a class FSATable() inside of fsaTable.h.
+The table contains states for the rows and columns for the character group.
+Each character group is simplified using an Enum as well as the States.
+When the scanner gets called the first thing that happens is comments,
+whitespace, and tabs are removed. Then the first character is sent to the
+fsaTable function GetState() with an initial state. the initial state plus the
+character's group give us the row and column of the table which then gives us
+the next state or the final token. the scanner then handles a bunch of exception
+cases by manipulating the file.get() and file.unget() functions to take care of
+error tokens and delimeter tokens with more than 1 character. 
+--------HOW TO RUN-----------------
+$ make clean
+$ make
+$ P1 [filename]
+
+NOTE: the filename must have .SP2020 extension and the program
+will add the extension on for you.
+
+git log:
+
+commit 94d25cea5fe40463f9613025e67f7d5bf918a651
+Author: jthkn9 <jthkn9@delmar.umsl.edu>
+Date:   Fri Mar 13 12:33:23 2020 -0500
+
+    done? need readme
+
+commit bedca7672b6fb01adc45bb14d91505c14bdf7451
+Author: jthkn9 <jthkn9@delmar.umsl.edu>
+Date:   Fri Mar 6 01:06:45 2020 -0600
+
+    Pretty much done gotta test and implement comment error.
+    also might want to make a print function to change idtoken numbers to strings.
+
+commit 59ee72ee39b14fdc5a72927136eafa08286237a5
+Author: jthkn9 <jthkn9@delmar.umsl.edu>
+Date:   Thu Mar 5 18:19:25 2020 -0600
+
+    Stuff is kinda working. need to implement numtoken deltoken etc.
+    for deltoken add a state row that doesnt give it a delim right away.
+
+commit 016caae73608a0e30e9b24b10820383589c41438
+Author: jthkn9 <jthkn9@delmar.umsl.edu>
+Date:   Thu Mar 5 15:53:45 2020 -0600
+
+    initial commit
