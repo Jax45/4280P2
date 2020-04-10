@@ -1,1 +1,1 @@
-ident := 50 ;
+declare ident := 50 ;

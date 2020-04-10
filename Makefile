@@ -2,14 +2,14 @@ CC	= g++
 CFLAGS	= -Wall -g
 
 MASTER_SRC = main.cpp 
-SRC = scanner.h parser.h
-SHARE_OBJ = scanner.o parser.o
-AUX = fsaTable.h
+SRC = scanner.h parser.h tree.h 
+SHARE_OBJ = scanner.o parser.o tree.o
+AUX = fsaTable.h node.h
 CP11 = -std=c++11
 MASTER_OBJ = $(MASTER_SRC:.cpp=.o)
 OBJ	= $(SRC:.h=.o)
 
-TARGET	= P1
+TARGET	= P2
 
 OUTPUT = $(TARGET)
 all: $(OUTPUT)

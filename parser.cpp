@@ -10,55 +10,78 @@ void printError(string expected, string found,int line){
 	file->close();
 	exit(1);
 }
+
+struct Token* nonterminal(string str){
+	struct Token* tk = new Token();//(struct Token*)malloc(sizeof(struct Token));;
+	tk->instance = str;
+	tk->tkId = NonterminalTk;
+	return tk;
+
+}
+
 void parser(ifstream& fp){
 	file = &fp;
-	program();
+	struct Node* tree = program();
+	inorderTraversal(tree,0);
 	file->close();
 	cout << "Parser completed" << endl;
 	return;
 }
 
-void program(){
-	TokenId firstSet[] = {DeclareTk};
-	vars();
-	block();
-	return;
+struct Node* program(){
+	//TokenId firstSet[] = {DeclareTk};
+	struct Node* tree = createTree(nonterminal("<Program>"));
+	//addSubtree(tree,vars());
+	addSubtree(tree,block());
+	return tree;
 }
 
-void block(){
-	TokenId firstSet[] = {BeginBlockTk};
+struct Node* block(){
+	//TokenId firstSet[] = {BeginBlockTk};
+	
+	struct Node* tree = createTree(nonterminal("<Block>"));
+	
 	tk = scanner(*file);
 	if(tk.instance == "{"){
-		//consume {
-		vars();
-		stats();
+		//consume 
+		tree = insertNode(tree,&tk);
+		addSubtree(tree,vars());
+		//addSubtree(tree,stats());
 		tk = scanner(*file);
 		if(tk.instance == "}"){
-			//finished.
+			//add to tree 
+			tree = insertNode(tree,&tk);
 		}
 		else{printError("}",tk.instance,tk.line);}
 			
 	}else{printError("{",tk.instance,tk.line);}
 	
-	return;
+	return tree;
 }
 
-void vars(){
+struct Node* vars(){
 	TokenId firstSet[] = {DeclareTk};
 	tk = scanner(*file);
+	struct Node* tree = createTree(nonterminal("<Vars>"));
 	if(tk.tkId == DeclareTk){ // declare id := ; <vars>
-	
+		tree = insertNode(tree,&tk);
+		tk = scanner(*file);
 		if(tk.tkId == IdTk){ //idtoken := Integer ; vars
-			//consume idtoken
+			tree = insertNode(tree,&tk);//consume idtoken
 			tk = scanner(*file);
 			if(tk.tkId == AsgTk){
 				//consume :=
+				tree = insertNode(tree,&tk);
 				tk = scanner(*file);
 				if(tk.tkId == NumTk){
 					//consume integer
+					tree = insertNode(tree,&tk);	
 					tk = scanner(*file);
 					if(tk.instance == ";"){
-						vars();
+						//add the semicolon
+						tree = insertNode(tree,&tk);
+						//add the vars token
+						addSubtree(tree,vars());
 					}
 					else{printError(";",tk.instance,tk.line);}		
 				}
@@ -69,33 +92,33 @@ void vars(){
 		else{printError("Identifier",tk.instance,tk.line);}
 	}
 	else{
-		//empty
+		tree = insertNode(tree,nonterminal("Empty"));
 	}
-	return;
+	return tree;
 }
 
 void expr(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
+	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void N(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
+	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void A(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
+	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void M(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
+	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void R(){
-	TokenId firstSet[] = {BeginParenTk,IdTk,NumTk};
+	//TokenId firstSet[] = {BeginParenTk,IdTk,NumTk};
 	return;	
 }
 void stats(){
-	TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
+	//TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 
 	stat();
 	mStat();
@@ -103,7 +126,7 @@ void stats(){
 }
 
 void mStat(){
-	TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
+	//TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 	
 	//if not first set return empty
 	return;
@@ -111,7 +134,7 @@ void mStat(){
 
 void stat(){
 	
-        TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
+        //TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 	tk = scanner(*file);
 	if(tk.tkId == InTk){
 		in();
@@ -127,30 +150,30 @@ void semicolon(){
 	return;
 }
 void in(){
-        TokenId firstSet[] = {InTk};
+ //       TokenId firstSet[] = {InTk};
         return;
 }
 void out(){
-	TokenId firstSet[] = {OutTk};
+//	TokenId firstSet[] = {OutTk};
 	return;		
 }
 void iffy(){
-	TokenId firstSet[] = {IffyTk};
+//	TokenId firstSet[] = {IffyTk};
 	return;
 }
 void assign(){
-	TokenId firstSet[] = {IdTk};
+//	TokenId firstSet[] = {IdTk};
 	return;
 }
 void label(){
-	TokenId firstSet[] = {LabelTk};
+//	TokenId firstSet[] = {LabelTk};
 	return;
 }
 void goTo(){
-	TokenId firstSet[] = {GotoTk};
+//	TokenId firstSet[] = {GotoTk};
 	return;
 }
 void RO(){
-	TokenId firstSet[] = {LessThanTk,GreaterThanTk,IsEqualTk};
+//	TokenId firstSet[] = {LessThanTk,GreaterThanTk,IsEqualTk};
 	return;
 }

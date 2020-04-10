@@ -1,13 +1,13 @@
 #ifndef PARSER_H
 #define PARSER_H
 #include "scanner.h"
-
+#include "tree.h"
 
 
 void parser(ifstream& file);
-void program();
-void block();
-void vars();
+struct Node* program();
+struct Node* block();
+struct Node* vars();
 void expr();
 void N();
 void A();

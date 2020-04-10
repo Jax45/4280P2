@@ -19,7 +19,7 @@ enum TokenId {GenErrTk = -1, AsgErrTk = -2, CmtErrTk = -3,
 	GotoTk = 1007, LoopTk = 1008, VoidTk,DeclareTk,ReturnTk,
 	InTk,OutTk,ProgramTk,IffyTk,ThenTk,AssignTk,DataTk, 
 	BeginBlockTk,BeginParenTk,MultiplyTk,LessThanTk,
-	GreaterThanTk,IsEqualTk,
+	GreaterThanTk,IsEqualTk, SemicolonTk, NonterminalTk,
 	State1=0,State2=1,State3=2,State4=3,State5=4,State6=5};
 
 //string TokenNames[] = {"EOF","Delimeter","Number","Error","Identifier"};
@@ -29,6 +29,8 @@ struct Token {
 	string instance;
 	int line;
 };
+
+
 
 class FSATable{
 	private:
@@ -216,6 +218,9 @@ class FSATable{
                         else if(tk.instance.compare("==") == 0){
                                 tk.tkId = IsEqualTk;
                         }
+			else if(tk.instance.compare(";") == 0){
+				tk.tkId = SemicolonTk;
+			}
 
 	
               	}

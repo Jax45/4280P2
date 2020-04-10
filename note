@@ -1,2 +1,1 @@
-Add required tokens to TokenId's 
-Make sure to have scanner change delims to appropriate Id's.
+Now need to implement lookahead.

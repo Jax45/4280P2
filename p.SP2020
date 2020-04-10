@@ -1,0 +1,4 @@
+#declare x:=5;
+declare y:=3;#
+
+{declare a:=1;}
