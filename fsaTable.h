@@ -17,7 +17,9 @@ enum TokenId {GenErrTk = -1, AsgErrTk = -2, CmtErrTk = -3,
 	EofTk = 1000,DelTk = 1001,
 	NumTk = 1002,IdTk = 1004, AsgTk = 1005, LabelTk = 1006,
 	GotoTk = 1007, LoopTk = 1008, VoidTk,DeclareTk,ReturnTk,
-	InTk,OutTk,ProgramTk,IffyTk,ThenTk,AssignTk,DataTk,
+	InTk,OutTk,ProgramTk,IffyTk,ThenTk,AssignTk,DataTk, 
+	BeginBlockTk,BeginParenTk,MultiplyTk,LessThanTk,
+	GreaterThanTk,IsEqualTk,
 	State1=0,State2=1,State3=2,State4=3,State5=4,State6=5};
 
 //string TokenNames[] = {"EOF","Delimeter","Number","Error","Identifier"};
@@ -194,9 +196,30 @@ class FSATable{
                         else if(tk.instance.compare("program") == 0){
                                 tk.tkId = ProgramTk;
                         }
-
-
                 }
+		else if(tk.tkId == DelTk){
+			if(tk.instance.compare("{") == 0){
+                                tk.tkId = BeginBlockTk;
+                        }
+			else if(tk.instance.compare("(") == 0){
+                                tk.tkId = BeginParenTk;
+                        }
+                        else if(tk.instance.compare("*") == 0){
+                                tk.tkId = MultiplyTk;
+                        }
+                        else if(tk.instance.compare("<") == 0){
+                                tk.tkId = LessThanTk;
+                        }
+                        else if(tk.instance.compare(">") == 0){
+                                tk.tkId = GreaterThanTk;
+                        }
+                        else if(tk.instance.compare("==") == 0){
+                                tk.tkId = IsEqualTk;
+                        }
+
+	
+              	}
+
 
 		tk.line = line;
 		return tk;

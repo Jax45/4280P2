@@ -19,14 +19,14 @@ void parser(ifstream& fp){
 }
 
 void program(){
-	TokenId firstSet[] = {DeclareTk}
+	TokenId firstSet[] = {DeclareTk};
 	vars();
 	block();
 	return;
 }
 
 void block(){
-	TokenId firstSet[] = {BeginBlockTk}
+	TokenId firstSet[] = {BeginBlockTk};
 	tk = scanner(*file);
 	if(tk.instance == "{"){
 		//consume {
@@ -44,7 +44,7 @@ void block(){
 }
 
 void vars(){
-	TokenId firstSet[] = {DeclareTk}
+	TokenId firstSet[] = {DeclareTk};
 	tk = scanner(*file);
 	if(tk.tkId == DeclareTk){ // declare id := ; <vars>
 	
@@ -66,7 +66,8 @@ void vars(){
 			}
 			else{printError(":=",tk.instance,tk.line);}
 		}
-		else{printError("Identifier",tk.instance,tk.line;}
+		else{printError("Identifier",tk.instance,tk.line);}
+	}
 	else{
 		//empty
 	}
@@ -74,27 +75,27 @@ void vars(){
 }
 
 void expr(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk}
+	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void N(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk}
+	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void A(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk}
+	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void M(){
-	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk}
+	TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	return;
 }
 void R(){
-	TokenId firstSet[] = {BeginParenTk,IdTk,NumTk}
+	TokenId firstSet[] = {BeginParenTk,IdTk,NumTk};
 	return;	
 }
 void stats(){
-	TokenId firstSet[] = {inTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk}
+	TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 
 	stat();
 	mStat();
@@ -102,7 +103,7 @@ void stats(){
 }
 
 void mStat(){
-	TokenId firstSet[] = {inTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk}
+	TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 	
 	//if not first set return empty
 	return;
@@ -110,7 +111,7 @@ void mStat(){
 
 void stat(){
 	
-        TokenId firstSet[] = {inTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk}
+        TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 	tk = scanner(*file);
 	if(tk.tkId == InTk){
 		in();
@@ -126,30 +127,30 @@ void semicolon(){
 	return;
 }
 void in(){
-        TokenId firstSet[] = {InTk}
+        TokenId firstSet[] = {InTk};
         return;
 }
 void out(){
-	TokenId firstSet[] = {OutTk}
+	TokenId firstSet[] = {OutTk};
 	return;		
 }
 void iffy(){
-	TokenId firstSet[] = {IffyTk}
+	TokenId firstSet[] = {IffyTk};
 	return;
 }
 void assign(){
-	TokenId firstSet[] = {IdTk}
+	TokenId firstSet[] = {IdTk};
 	return;
 }
 void label(){
-	TokenId firstSet[] = {LabelTk}
+	TokenId firstSet[] = {LabelTk};
 	return;
 }
 void goTo(){
-	TokenId firstSet[] = {GotoTk}
+	TokenId firstSet[] = {GotoTk};
 	return;
 }
 void RO(){
-	TokenId firstSet[] = {LessTk,GreatTk,isEqualTk}
+	TokenId firstSet[] = {LessThanTk,GreaterThanTk,IsEqualTk};
 	return;
 }
