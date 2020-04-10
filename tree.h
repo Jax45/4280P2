@@ -12,6 +12,6 @@ struct Node* insertNode(struct Node* node, struct Token* token);
 void addSubtree(struct Node* node, struct Node* subtree);
 
 void inorderTraversal(struct Node *node,int depth);
-
+void debugTraversal(struct Node *node, int depth);
 
 #endif
