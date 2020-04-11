@@ -1,9 +1,9 @@
-declare x:=5;
-declare y:=3;
-
+declare x:=0;
 {
 	declare a:=1;
 	in b;
 	out (a-b);
-	iffy [ x-y > y-z ] then goto BEGIN;
+	iffy [ x-y > y+z ] then goto BEGIN;;
+	loop [ x/y << y*z ] label Something;;
+	x := 5;
 }

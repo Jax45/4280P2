@@ -7,7 +7,7 @@ ifstream* file;
 bool lookedAhead = false;
 
 void printError(string expected, string found,int line){
-	cout << "expected: " << expected << " found: " << found << " On line: " << line << endl;
+	cout << "Parser expected: '" << expected << "', but found: '" << found << "' On line: '#" << line << "'" << endl;
 	file->close();
 	exit(1);
 }
@@ -40,6 +40,10 @@ struct Node* program(){
 	struct Node* tree = createTree(nonterminal("<Program>"));
 	addSubtree(tree,vars());
 	addSubtree(tree,block());
+	getNextToken();
+	if(tk.tkId != EofTk){
+		printError("End of file",tk.instance,tk.line);
+	}
 	return tree;
 }
 
