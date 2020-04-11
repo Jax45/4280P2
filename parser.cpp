@@ -26,13 +26,13 @@ struct Token* nonterminal(string str){
 
 }
 
-void parser(ifstream& fp){
+struct Node* parser(ifstream& fp){
 	file = &fp;
 	struct Node* tree = program();
 	preorderTraversal(tree,0);
 	file->close();
 	cout << "Parser completed" << endl;
-	return;
+	return tree;
 }
 
 struct Node* program(){
@@ -71,18 +71,18 @@ struct Node* block(){
 
 struct Node* vars(){
 	TokenId firstSet[] = {DeclareTk};
-	getNextToken();
+	getNextToken(); //declare
 	struct Node* tree = createTree(nonterminal("<Vars>"));
 	if(tk.tkId == DeclareTk){ // declare id := ; <vars>
 		//leave out declare: tree = insertNode(tree,&tk);
-		getNextToken();
+		getNextToken(); //identifier
 		if(tk.tkId == IdTk){ //idtoken := Integer ; vars
 			tree = insertNode(tree,&tk);//consume idtoken
-			getNextToken();
+			getNextToken(); //:=
 			if(tk.tkId == AsgTk){
 				//consume :=
 				//leave out ':=' : tree = insertNode(tree,&tk);
-				getNextToken();
+				getNextToken(); //Integer
 				if(tk.tkId == NumTk){
 					//consume integer
 					tree = insertNode(tree,&tk);	

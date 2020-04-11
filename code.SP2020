@@ -1,0 +1,25 @@
+#declare a global variable#
+declare x:=0;
+{
+	#local variable#
+	declare a := 0;
+	#fill a with input from the user#
+	in a;
+	#if a is greater than or equal to 1#
+	iffy [ a >> 1 ] 
+	then 
+		#output a countdown from the given number#
+		goto countdown;;
+	goto exit;
+
+	label decrement;
+                out a;
+                a := a-1;
+                goto countdown;
+
+        label countdown;
+                loop [ a <> 0  ] goto decrement;;
+                goto exit;
+
+	label exit;
+}

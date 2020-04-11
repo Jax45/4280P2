@@ -4,7 +4,7 @@
 #include "tree.h"
 
 
-void parser(ifstream& file);
+struct Node* parser(ifstream& file);
 struct Node* program();
 struct Node* block();
 struct Node* vars();

@@ -1,0 +1,6 @@
+declare x:=1;
+declare y:=0;
+{
+	declare z:=0;
+	x:=1;
+}

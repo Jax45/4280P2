@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "parser.h"
+#include "generator.h"
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -45,19 +46,16 @@ int main(int argc, char** argv){
 		ifstream file(copyFile);
 		
 		cout << "Calling Parser" << endl;
-		parser(file);
-			
-		//struct Token token = scanner(file);	
-		//while(token.tkId != EofTk){
-		//	printToken(token);
-		//	token = scanner(file);
-		//
-		//}
-		//printToken(token);
-		//close file
-		//FSATable table = FSATable();
-		//table.print();	
-		//file.close();
+		struct Node* parseTree = parser(file);
+		
+		//generate a file we can compile?
+		string cFile = "generatedCode.c";
+		ofstream outFile(cFile);
+		//outFile << "int main(int argc, char** argv){\n";
+		//print out the declarations(VARS),then the VARS inside <BLOCK>
+		generateCode(outFile,parseTree);
+		outFile << "\treturn 0;\n";
+		outFile << "}";	
 		return 0;	
 		
 	}
