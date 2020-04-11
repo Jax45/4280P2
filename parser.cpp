@@ -115,25 +115,90 @@ struct Node* vars(){
 	return tree;
 }
 
-void expr(){
+struct Node* expr(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
-	return;
+	
+	struct Node* tree = createTree(nonterminal("<Expr>"));
+	addSubtree(tree,N());
+	//   - <expr> or nothing
+	getNextToken();
+	if(tk.instance == "-"){
+		tree = insertNode(tree,&tk);
+		addSubtree(tree,expr());
+	}
+	else{
+		lookedAhead = true;
+	}
+	return tree;
 }
-void N(){
+struct Node* N(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
-	return;
+	struct Node* tree = createTree(nonterminal("<N>"));
+        addSubtree(tree,A());
+	getNextToken();
+	/* / <N> | * <N> | nothing*/
+        if(tk.instance == "/" || tk.instance == "*"){
+                tree = insertNode(tree,&tk);
+		addSubtree(tree,N());
+        }
+	else{
+                lookedAhead = true;
+        }	
+        return tree;	
 }
-void A(){
+struct Node* A(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
-	return;
+	struct Node* tree = createTree(nonterminal("<A>"));
+        addSubtree(tree,M());
+	getNextToken();
+        if(tk.instance == "+"){
+                tree = insertNode(tree,&tk);
+                addSubtree(tree,A());
+        }
+	else{
+                lookedAhead = true;
+        }
+        return tree;
 }
-void M(){
+struct Node* M(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
-	return;
+	struct Node* tree = createTree(nonterminal("<M>"));
+        getNextToken();
+        if(tk.instance == "*"){
+                tree = insertNode(tree,&tk);
+                addSubtree(tree,M());
+        }
+        else{
+                lookedAhead = true;
+		addSubtree(tree,R());
+        }
+        return tree;
 }
-void R(){
+struct Node* R(){
 	//TokenId firstSet[] = {BeginParenTk,IdTk,NumTk};
-	return;	
+	struct Node* tree = createTree(nonterminal("<R>"));
+        getNextToken();
+        if(tk.instance == "("){
+		//(<expr>)
+                tree = insertNode(tree,&tk);
+                addSubtree(tree,expr());
+		getNextToken();
+		if(tk.instance == ")"){
+			tree = insertNode(tree,&tk);
+		}else{printError(")",tk.instance,tk.line);}
+        }
+	else if(tk.tkId == IdTk){
+                //identifier
+        	tree = insertNode(tree,&tk);	
+	}
+        else if(tk.tkId == NumTk){
+         	//Integer
+         	tree = insertNode(tree,&tk);       
+        }
+	else{
+		unexpectedError();
+	}
+        return tree;
 }
 struct Node* stats(){
 	//TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
@@ -204,7 +269,7 @@ struct Node* stat(){
 
 }
 struct Token* semicolon(){
-	tk = scanner(*file);
+	getNextToken();
         if(tk.instance != ";"){
        		printError(";",tk.instance,tk.line);
 	}
@@ -227,7 +292,7 @@ struct Node* out(){
 	struct Node* tree = createTree(nonterminal("<Out>"));
         tree = insertNode(tree,&tk);
 	//get expr
-	//addSubtree(tree,expr());
+	addSubtree(tree,expr());
         return tree;
 }
 void iffy(){
@@ -249,4 +314,14 @@ void goTo(){
 void RO(){
 //	TokenId firstSet[] = {LessThanTk,GreaterThanTk,IsEqualTk};
 	return;
+}
+
+void getNextToken(){
+	if(lookedAhead == false){
+                tk = scanner(*file);
+        }
+        else{
+                lookedAhead = false;
+        }
+
 }

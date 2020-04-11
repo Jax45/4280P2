@@ -1,1 +1,5 @@
-Now need to implement lookahead.
+Might have fixed this below:
+
+
+Check expr, N, A, M, R
+there is a lookahead problem.

@@ -4,5 +4,5 @@ declare y:=3;
 {
 	declare a:=1;
 	in b;
-	out ;
+	out (a-b);
 }
