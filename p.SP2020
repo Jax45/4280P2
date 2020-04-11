@@ -5,4 +5,5 @@ declare y:=3;
 	declare a:=1;
 	in b;
 	out (a-b);
+	iffy [ x-y > y-z ] then goto BEGIN;
 }

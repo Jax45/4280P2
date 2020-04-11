@@ -94,8 +94,6 @@ struct Node* insertNode(struct Node* node, struct Token* token)
 	}
 	return node; 
 } 
-
-
 /*Inorder traversal*/
 void inorderTraversal(struct Node *node, int depth){
 	/*arg depth is to keep track of depth recusively*/
@@ -138,8 +136,9 @@ void inorderTraversal(struct Node *node, int depth){
 	inorderTraversal(node->fifth,depth+1);
 	inorderTraversal(node->sixth,depth+1);
 }
-/*just a traversal to see it in a way i would write it on paper.*/
-void debugTraversal(struct Node *node, int depth){
+/*just a traversal to see it in a way i would write it on paper.
+ * Root first then each branch from left to right.*/
+void preorderTraversal(struct Node *node, int depth){
         /*arg depth is to keep track of depth recusively*/
         if(node == NULL){
                 return;
@@ -156,25 +155,25 @@ void debugTraversal(struct Node *node, int depth){
         /*print children*/
         if(node->first != NULL){
                 cout << depthStr << node->first->token->instance << endl;
-		debugTraversal(node->first,depth+1);
+		preorderTraversal(node->first,depth+1);
                 if(node->second != NULL){
                         cout << depthStr << node->second->token->instance << endl;
-			debugTraversal(node->second,depth+1);
+			preorderTraversal(node->second,depth+1);
                         if(node->third != NULL){
                                 cout << depthStr << node->third->token->instance << endl;
-                        	debugTraversal(node->third,depth+1);
+                        	preorderTraversal(node->third,depth+1);
 			}
                 }
         }
         if(node->fourth != NULL){
                 cout << depthStr << node->fourth->token->instance << endl;
-                debugTraversal(node->fourth,depth+1);
+                preorderTraversal(node->fourth,depth+1);
 		if(node->fifth != NULL){
                         cout << depthStr << node->fifth->token->instance << endl;
-                        debugTraversal(node->fifth,depth+1);
+                        preorderTraversal(node->fifth,depth+1);
 			if(node->sixth != NULL){
                                 cout << depthStr << node->sixth->token->instance << endl;
-                        	debugTraversal(node->sixth,depth+1);
+                        	preorderTraversal(node->sixth,depth+1);
 			}
                 }
         }

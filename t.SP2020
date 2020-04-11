@@ -1,0 +1,4 @@
+declare x:=5; {
+  in b;
+  iffy [ x-5 < w+5 ] then in begin; ;
+}

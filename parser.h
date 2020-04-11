@@ -16,14 +16,15 @@ struct Node* R();
 struct Node* stats();
 struct Node* mStat();
 struct Node* stat();
-struct Token* semicolon();
+void semicolon();
 struct Node* in();
 struct Node* out();
-void iffy();
-void assign();
-void label();
-void goTo();
-void RO();
+struct Node* iffy();
+struct Node* loop();
+struct Node* assign();
+struct Node* label();
+struct Node* goTo();
+struct Node* RO();
 
 void getNextToken();
 

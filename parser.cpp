@@ -29,7 +29,7 @@ struct Token* nonterminal(string str){
 void parser(ifstream& fp){
 	file = &fp;
 	struct Node* tree = program();
-	debugTraversal(tree,0);
+	preorderTraversal(tree,0);
 	file->close();
 	cout << "Parser completed" << endl;
 	return;
@@ -47,26 +47,16 @@ struct Node* block(){
 	//TokenId firstSet[] = {BeginBlockTk};
 	
 	struct Node* tree = createTree(nonterminal("<Block>"));
-	if(lookedAhead == false){
-		tk = scanner(*file);
-	}
-	else{
-		lookedAhead = false;
-	}
+	getNextToken();
 	if(tk.instance == "{"){
 		//consume 
-		tree = insertNode(tree,&tk);
+		//leave out {: tree = insertNode(tree,&tk);
 		addSubtree(tree,vars());
 		addSubtree(tree,stats());
-	        if(lookedAhead == false){
-	                tk = scanner(*file);
-	        }
-	        else{
-	                lookedAhead = false;
-	        }
+	        getNextToken();
 		if(tk.instance == "}"){
 			//add to tree 
-			tree = insertNode(tree,&tk);
+			//leave out }: tree = insertNode(tree,&tk);
 		}
 		else{printError("}",tk.instance,tk.line);}
 			
@@ -77,25 +67,25 @@ struct Node* block(){
 
 struct Node* vars(){
 	TokenId firstSet[] = {DeclareTk};
-	tk = scanner(*file);
+	getNextToken();
 	struct Node* tree = createTree(nonterminal("<Vars>"));
 	if(tk.tkId == DeclareTk){ // declare id := ; <vars>
-		tree = insertNode(tree,&tk);
-		tk = scanner(*file);
+		//leave out declare: tree = insertNode(tree,&tk);
+		getNextToken();
 		if(tk.tkId == IdTk){ //idtoken := Integer ; vars
 			tree = insertNode(tree,&tk);//consume idtoken
-			tk = scanner(*file);
+			getNextToken();
 			if(tk.tkId == AsgTk){
 				//consume :=
-				tree = insertNode(tree,&tk);
-				tk = scanner(*file);
+				//leave out ':=' : tree = insertNode(tree,&tk);
+				getNextToken();
 				if(tk.tkId == NumTk){
 					//consume integer
 					tree = insertNode(tree,&tk);	
-					tk = scanner(*file);
+					getNextToken();
 					if(tk.instance == ";"){
 						//add the semicolon
-						tree = insertNode(tree,&tk);
+						//leave out the ';': tree = insertNode(tree,&tk);
 						//add the vars token
 						addSubtree(tree,vars());
 					}
@@ -196,7 +186,7 @@ struct Node* R(){
          	tree = insertNode(tree,&tk);       
         }
 	else{
-		unexpectedError();
+		printError("Integer,Identifier, or '('",tk.instance,tk.line);
 	}
         return tree;
 }
@@ -210,7 +200,7 @@ struct Node* stats(){
 
 struct Node* mStat(){
 	set<TokenId> firstSet = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
-	tk = scanner(*file);
+	getNextToken();
         struct Node* tree = createTree(nonterminal("<MStat>"));	
 	if(firstSet.count(tk.tkId) != 0){
 		//we looked ahead here
@@ -230,12 +220,9 @@ struct Node* mStat(){
 struct Node* stat(){
 	
         //TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
-	if(lookedAhead == false){
-                tk = scanner(*file);
-        }
-        else{
-                lookedAhead = false;
-        }
+	getNextToken();
+	//looked ahead here
+	lookedAhead = true;
 	struct Node* tree = createTree(nonterminal("<Stat>"));
 	if(tk.tkId == InTk){
 		addSubtree(tree,in());
@@ -244,43 +231,45 @@ struct Node* stat(){
 		addSubtree(tree,out());
 	}
         else if(tk.tkId == BeginBlockTk){
-                addSubtree(tree,out());
+                addSubtree(tree,block());
         }
         else if(tk.tkId == IffyTk){
-                addSubtree(tree,out());
+                addSubtree(tree,iffy());
         }
         else if(tk.tkId == LoopTk){
-                addSubtree(tree,out());
+                addSubtree(tree,loop());
         }
         else if(tk.tkId == IdTk){
-                addSubtree(tree,out());
+                addSubtree(tree,assign());
         }
         else if(tk.tkId == GotoTk){
-                addSubtree(tree,out());
+                addSubtree(tree,goTo());
         }
         else if(tk.tkId == LabelTk){
-                addSubtree(tree,out());
+                addSubtree(tree,label());
         }
 	else{
-		unexpectedError();
+		printError("A Statement",tk.instance,tk.line);
 	}
-	tree = insertNode(tree,semicolon());
-        return tree;
+	//tree = insertNode(tree,semicolon());
+        semicolon();
+	return tree;
 
 }
-struct Token* semicolon(){
+void semicolon(){
 	getNextToken();
         if(tk.instance != ";"){
        		printError(";",tk.instance,tk.line);
 	}
-	return &tk;
+	return;
 }
 struct Node* in(){
  //       TokenId firstSet[] = {InTk};
 	struct Node* tree = createTree(nonterminal("<In>"));
-	tree = insertNode(tree,&tk);
+	getNextToken();
+	//leave out the in: tree = insertNode(tree,&tk);
 	//get identifier
-	tk = scanner(*file);
+	getNextToken();
 	if(tk.tkId == IdTk){
 		tree = insertNode(tree,&tk);
 	}else{printError("Identifier",tk.instance,tk.line);}
@@ -290,30 +279,135 @@ struct Node* in(){
 struct Node* out(){
 //	TokenId firstSet[] = {OutTk};
 	struct Node* tree = createTree(nonterminal("<Out>"));
-        tree = insertNode(tree,&tk);
+	getNextToken(); 
+        //leave out the out: tree = insertNode(tree,&tk);
 	//get expr
 	addSubtree(tree,expr());
         return tree;
 }
-void iffy(){
+struct Node* iffy(){
 //	TokenId firstSet[] = {IffyTk};
-	return;
+	struct Node* tree = createTree(nonterminal("<Iffy>"));
+        getNextToken();
+	//leave out iffy: tree = insertNode(tree,&tk);
+	// [ <expr> <RO> <expr> ] then <stat>
+	getNextToken();
+	if(tk.instance == "["){
+		//leave out [ tree = insertNode(tree,&tk);
+		addSubtree(tree,expr());
+		addSubtree(tree,RO());
+		addSubtree(tree,expr());
+		getNextToken();
+	        if(tk.instance == "]"){
+			//leave out ] tree = insertNode(tree,&tk);
+			getNextToken();
+		        if(tk.tkId == ThenTk){
+				//leave out then: tree = insertNode(tree,&tk);
+				addSubtree(tree,stat());
+			}else{printError("then",tk.instance,tk.line);}
+		}else{printError("]",tk.instance,tk.line);}
+	}else{printError("[",tk.instance,tk.line);}
+
+	return tree;
 }
-void assign(){
+struct Node* loop(){
+        struct Node* tree = createTree(nonterminal("<Loop>"));
+	getNextToken();
+        //leave out loop: tree = insertNode(tree,&tk);
+	
+//[ <expr> <RO> <expr> ] <stat>
+	getNextToken();
+        if(tk.instance == "["){
+                //leave out [: tree = insertNode(tree,&tk);
+                addSubtree(tree,expr());
+                addSubtree(tree,RO());
+                addSubtree(tree,expr());
+                getNextToken();
+                if(tk.instance == "]"){
+                        //leave out ]: tree = insertNode(tree,&tk);
+                        addSubtree(tree,stat());
+                }else{printError("]",tk.instance,tk.line);}
+        }else{printError("[",tk.instance,tk.line);}
+
+        return tree;
+
+}
+struct Node* assign(){
 //	TokenId firstSet[] = {IdTk};
-	return;
+	struct Node* tree = createTree(nonterminal("<Assign>"));
+	getNextToken(); 
+       	tree = insertNode(tree,&tk); //consume IdTk
+	// := <expr>
+	getNextToken();
+	if(tk.instance == ":="){
+		//leave out the ':=': tree = insertNode(tree,&tk);
+		addSubtree(tree,expr());
+	}else{printError(":=",tk.instance,tk.line);}
+	return tree;
 }
-void label(){
+struct Node* label(){
 //	TokenId firstSet[] = {LabelTk};
-	return;
+        struct Node* tree = createTree(nonterminal("<Label>"));
+	getNextToken(); 
+       	//leave out the 'label': tree = insertNode(tree,&tk); /*consume label*/
+	/*get identifier*/
+	getNextToken();
+	if(tk.tkId == IdTk){
+		tree = insertNode(tree,&tk);
+	}else{printError("Identifier",tk.instance,tk.line);}
+        return tree;
+
 }
-void goTo(){
+struct Node* goTo(){
 //	TokenId firstSet[] = {GotoTk};
-	return;
+	struct Node* tree = createTree(nonterminal("<Goto>"));
+	getNextToken();
+        //leave out the goto: tree = insertNode(tree,&tk); /*consume goto*/
+        /*get identifier*/
+        getNextToken();
+	if(tk.tkId == IdTk){
+                tree = insertNode(tree,&tk);
+        }else{printError("Identifier",tk.instance,tk.line);}
+        return tree;
+
 }
-void RO(){
+struct Node* RO(){
 //	TokenId firstSet[] = {LessThanTk,GreaterThanTk,IsEqualTk};
-	return;
+	struct Node* tree = createTree(nonterminal("<RO>"));
+	getNextToken();
+	if(tk.tkId == LessThanTk){
+		tree = insertNode(tree,&tk);
+		getNextToken();
+		if(tk.tkId == LessThanTk){
+			tree = insertNode(tree,&tk); // <<
+		}
+		else if(tk.tkId == GreaterThanTk){
+			tree = insertNode(tree,&tk); // <>
+		}else{
+			lookedAhead = true;    // <
+		}
+	}
+
+	else if(tk.tkId == GreaterThanTk){
+                tree = insertNode(tree,&tk);
+                getNextToken();
+                if(tk.tkId == GreaterThanTk){
+			tree = insertNode(tree,&tk); // >>	
+		}
+		else{
+			lookedAhead = true;		
+			// else it is just >
+		}
+	}
+
+	else if(tk.tkId == IsEqualTk){
+                tree = insertNode(tree,&tk);
+		// ==
+	}
+	else{
+		printError("Relational Operator",tk.instance,tk.line);
+	}
+	return tree;
 }
 
 void getNextToken(){
