@@ -1,0 +1,9 @@
+declare x := 5 ;
+{
+	declare a:=1;
+	in b;
+	out (a-b);
+	iffy [ x-y <> y+z ] then x:=3;;
+	loop [ x/y << y*z ] label Something;;
+	x := 5;
+}

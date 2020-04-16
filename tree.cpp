@@ -15,7 +15,7 @@
 struct Node* createTree(struct Token* token){
 	struct Node *temp = new Node();//(struct Node*)malloc(sizeof(struct Node));
 	temp->token = token;
-	temp->first = temp->second = temp->third = temp->fourth = temp->fifth = temp->sixth = NULL;
+	temp->first = temp->second = temp->third = temp->fourth = NULL;
 	return temp;
 }
 
@@ -46,11 +46,10 @@ void addSubtree(struct Node* node, struct Node* subtree){
         else if(node->fourth == NULL){
                 node->fourth = subtree;
         }
-        else if(node->fifth == NULL){
-                node->fifth = subtree;
-        }
-        else if(node->sixth == NULL){
-                node->sixth = subtree;
+	else{
+                /*something weird happend if we got here*/
+                perror("ERROR: Tree.cpp: For some reason all of the child nodes are full and we cannot add a subtree.");
+                exit(1);
         }
 }
 
@@ -81,14 +80,8 @@ struct Node* insertNode(struct Node* node, struct Token* token)
 	else if(node->fourth == NULL){
 		node->fourth = createTree(temp);
 	}
-        else if(node->fifth == NULL){
-                node->fifth = createTree(temp);
-        }
-        else if(node->sixth == NULL){
-                node->sixth = createTree(temp);
-        }
 	else{
-		//something weird happend if we got here
+		/*something weird happend if we got here*/
 		perror("ERROR: Tree.cpp: For some reason all of the child nodes are full");
 		exit(1);
 	}
@@ -121,20 +114,12 @@ void inorderTraversal(struct Node *node, int depth){
 	}
         if(node->fourth != NULL){
                 cout << depthStr << node->fourth->token->instance << endl;
-                if(node->fifth != NULL){
-                        cout << depthStr << node->fifth->token->instance << endl;
-                        if(node->sixth != NULL){
-                                cout << depthStr << node->sixth->token->instance << endl;
-                        }
-                }
         }
 
 	inorderTraversal(node->first,depth+1);
 	inorderTraversal(node->second,depth+1);
 	inorderTraversal(node->third,depth+1);
 	inorderTraversal(node->fourth,depth+1);
-	inorderTraversal(node->fifth,depth+1);
-	inorderTraversal(node->sixth,depth+1);
 }
 /*just a traversal to see it in a way i would write it on paper.
  * Root first then each branch from left to right.*/
@@ -168,14 +153,6 @@ void preorderTraversal(struct Node *node, int depth){
         if(node->fourth != NULL){
                 cout << depthStr << node->fourth->token->instance << endl;
                 preorderTraversal(node->fourth,depth+1);
-		if(node->fifth != NULL){
-                        cout << depthStr << node->fifth->token->instance << endl;
-                        preorderTraversal(node->fifth,depth+1);
-			if(node->sixth != NULL){
-                                cout << depthStr << node->sixth->token->instance << endl;
-                        	preorderTraversal(node->sixth,depth+1);
-			}
-                }
         }
 }
 

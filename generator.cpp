@@ -111,6 +111,10 @@ void generateStat(ofstream& file, struct Node* statNode,int depth){
 		file << "}\n";
 
 	}
+	else if(type == "<Block>"){
+		//not sure what this is supposed to do...
+		
+	}
 	return;
 }
 

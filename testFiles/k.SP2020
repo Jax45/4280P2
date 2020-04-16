@@ -1,0 +1,7 @@
+declare x := 0 ;
+{
+  goto x ;
+    iffy [ x < 0 ] then
+      iffy [ x < > 0 ] then 
+  label x ; ; ;
+}

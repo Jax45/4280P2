@@ -1,23 +1,29 @@
 //Parser function
+//This is the whole core of the parser's BNF. the parser expects
+//an input stream file and gets tokens by passing that to the scanner.
+//this parser may need to look ahead if it cannot decide on the next BNF 
+//to take but it only looks ahead one token at a time. that is what
+//the flag "lookedAhead" is for.
 #include "parser.h"
 #include <stdbool.h>
 //global variables
 struct Token tk;
 ifstream* file;
 bool lookedAhead = false;
-
+//print an error of what was expected and what was found
 void printError(string expected, string found,int line){
 	cout << "Parser expected: '" << expected << "', but found: '" << found << "' On line: '#" << line << "'" << endl;
 	file->close();
 	exit(1);
 }
-
+//unused? it was for a error that was not helpful.
 void unexpectedError(){
 	cout << "Error encountered while parsing. Unexpected \"" << tk.instance
 		<< "\" found on line:" << tk.line << endl;
 	exit(1);
 }
 
+//just create a nonterminal token to store in the tree.
 struct Token* nonterminal(string str){
 	struct Token* tk = new Token();//(struct Token*)malloc(sizeof(struct Token));;
 	tk->instance = str;
@@ -25,16 +31,18 @@ struct Token* nonterminal(string str){
 	return tk;
 
 }
-
+//takes in a file input stream reference and calls program.
+//then assuming the parser doesnt error out it prints the 
+//tree, then closes the file.
 struct Node* parser(ifstream& fp){
 	file = &fp;
 	struct Node* tree = program();
-	preorderTraversal(tree,0);
+	//preorderTraversal(tree,0);
 	file->close();
 	cout << "Parser completed" << endl;
 	return tree;
 }
-
+//BNF: PROGRAM -> <VARS> <BLOCK>
 struct Node* program(){
 	//TokenId firstSet[] = {DeclareTk};
 	struct Node* tree = createTree(nonterminal("<Program>"));
@@ -47,6 +55,7 @@ struct Node* program(){
 	return tree;
 }
 
+//BNF: BLOCK -> { <VARS> <STATS> }
 struct Node* block(){
 	//TokenId firstSet[] = {BeginBlockTk};
 	
@@ -68,9 +77,9 @@ struct Node* block(){
 	
 	return tree;
 }
-
+//BNF: VARS -> declare IdentifierToken := NumberToken ; <VARS>
 struct Node* vars(){
-	TokenId firstSet[] = {DeclareTk};
+	//TokenId firstSet[] = {DeclareTk};
 	getNextToken(); //declare
 	struct Node* tree = createTree(nonterminal("<Vars>"));
 	if(tk.tkId == DeclareTk){ // declare id := ; <vars>
@@ -108,7 +117,7 @@ struct Node* vars(){
 	}
 	return tree;
 }
-
+//BNF: <EXPR> -> <N> - <EXPR> | <N>
 struct Node* expr(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	
@@ -125,6 +134,7 @@ struct Node* expr(){
 	}
 	return tree;
 }
+//BNF: <N> -> <A> | <A> / <N> | <A> * <N>
 struct Node* N(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	struct Node* tree = createTree(nonterminal("<N>"));
@@ -140,6 +150,8 @@ struct Node* N(){
         }	
         return tree;	
 }
+
+//BNF: <A> -> <M> | <M> + <A>
 struct Node* A(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	struct Node* tree = createTree(nonterminal("<A>"));
@@ -154,6 +166,8 @@ struct Node* A(){
         }
         return tree;
 }
+
+//BNF: <M> -> *<M> | <R>
 struct Node* M(){
 	//TokenId firstSet[] = {MultiplyTk,BeginParenTk,IdTk,NumTk};
 	struct Node* tree = createTree(nonterminal("<M>"));
@@ -168,6 +182,8 @@ struct Node* M(){
         }
         return tree;
 }
+
+//BNF: <R> -> ( <EXPR> ) | IdentifierToken | NumberToken
 struct Node* R(){
 	//TokenId firstSet[] = {BeginParenTk,IdTk,NumTk};
 	struct Node* tree = createTree(nonterminal("<R>"));
@@ -194,6 +210,8 @@ struct Node* R(){
 	}
         return tree;
 }
+
+//BNF: <STATS> -> <STAT> <MSTAT>
 struct Node* stats(){
 	//TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 	struct Node* tree = createTree(nonterminal("<Stats>"));
@@ -202,6 +220,7 @@ struct Node* stats(){
 	return tree;
 }
 
+//BNF: <MSTAT> -> <STAT> <MSTAT> | empty
 struct Node* mStat(){
 	set<TokenId> firstSet = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
 	getNextToken();
@@ -221,6 +240,8 @@ struct Node* mStat(){
 	return tree;
 }
 
+//BNF: <STAT> -> <IN> ; | <OUT> ; | <ASSIGN> ; | <LABEL> ; | <GOTO> ; | <BLOCK> ; |
+//		<LOOP> ; | <IFFY> ;
 struct Node* stat(){
 	
         //TokenId firstSet[] = {InTk,OutTk,BeginBlockTk,IffyTk,LoopTk,IdTk,GotoTk,LabelTk};
@@ -260,6 +281,8 @@ struct Node* stat(){
 	return tree;
 
 }
+
+//just generic use up semicolon token function to compact code.
 void semicolon(){
 	getNextToken();
         if(tk.instance != ";"){
@@ -267,6 +290,8 @@ void semicolon(){
 	}
 	return;
 }
+
+//BNF: <IN> -> in IdentifierToken
 struct Node* in(){
  //       TokenId firstSet[] = {InTk};
 	struct Node* tree = createTree(nonterminal("<In>"));
@@ -280,6 +305,8 @@ struct Node* in(){
 
 	return tree;
 }
+
+//BNF: <OUT> -> out <EXPR>
 struct Node* out(){
 //	TokenId firstSet[] = {OutTk};
 	struct Node* tree = createTree(nonterminal("<Out>"));
@@ -289,6 +316,8 @@ struct Node* out(){
 	addSubtree(tree,expr());
         return tree;
 }
+
+//BNF: <IFFY> -> iffy [ <expr> <RO> <expr> ] then <stat> 
 struct Node* iffy(){
 //	TokenId firstSet[] = {IffyTk};
 	struct Node* tree = createTree(nonterminal("<Iffy>"));
@@ -314,6 +343,8 @@ struct Node* iffy(){
 
 	return tree;
 }
+
+//BNF: LOOP -> loop [ <expr> <RO> <expr> ] <stat>
 struct Node* loop(){
         struct Node* tree = createTree(nonterminal("<Loop>"));
 	getNextToken();
@@ -336,6 +367,8 @@ struct Node* loop(){
         return tree;
 
 }
+
+//BNF: <ASSIGN> -> identifierToken := NumberToken 
 struct Node* assign(){
 //	TokenId firstSet[] = {IdTk};
 	struct Node* tree = createTree(nonterminal("<Assign>"));
@@ -349,6 +382,8 @@ struct Node* assign(){
 	}else{printError(":=",tk.instance,tk.line);}
 	return tree;
 }
+
+//BNF: <LABEL> -> label identifiertoken
 struct Node* label(){
 //	TokenId firstSet[] = {LabelTk};
         struct Node* tree = createTree(nonterminal("<Label>"));
@@ -362,6 +397,8 @@ struct Node* label(){
         return tree;
 
 }
+
+//BNF: <GOTO> -> goto IdentifierToken
 struct Node* goTo(){
 //	TokenId firstSet[] = {GotoTk};
 	struct Node* tree = createTree(nonterminal("<Goto>"));
@@ -375,6 +412,8 @@ struct Node* goTo(){
         return tree;
 
 }
+
+//BNF <RO> -> < | << | <> | > | >> | ==
 struct Node* RO(){
 //	TokenId firstSet[] = {LessThanTk,GreaterThanTk,IsEqualTk};
 	struct Node* tree = createTree(nonterminal("<RO>"));
@@ -414,6 +453,8 @@ struct Node* RO(){
 	return tree;
 }
 
+//function takes care of lookahead and calling scanner for me.
+//just a utility function for compact code.
 void getNextToken(){
 	if(lookedAhead == false){
                 tk = scanner(*file);

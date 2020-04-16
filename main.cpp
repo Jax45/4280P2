@@ -1,10 +1,17 @@
 //main.cpp
 //Jackson Hoenig
-//
+//This main driver is to call the parser with the given
+//file from the argument. the file needs to have the suffix
+//".SP2020" and has to be in the correct format otherwise the 
+//parser will issue an error.
 //EXTERNAL FILES:
 //fsaTable.h
 //scanner.h
 //scanner.cpp
+//parser.cpp
+//parser.h
+//tree.h
+//node.h
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,18 +51,31 @@ int main(int argc, char** argv){
 		strcat(copyFile, ".SP2020\0");
 		//fp = fopen(copyFile,"r");
 		ifstream file(copyFile);
-		
+			
 		cout << "Calling Parser" << endl;
 		struct Node* parseTree = parser(file);
-		
+
+	        preorderTraversal(parseTree,0);
+
+/*Here I tried to start on Code Generation. It somewhat works,
+ * but sometimes it will segmentation fault because i have
+ * not implemented <block> <in> and <out> yet since
+ * I do not know what the purpose of those are yet besides
+ * <block> doing main for the first block.
+ *
+ * uncomment below if you want to see it in action.
+ */
 		//generate a file we can compile?
+		//print out the declarations(VARS),
+		//then the VARS inside <BLOCK>
+		
+	/* UNCOMMENT HERE:
 		string cFile = "generatedCode.c";
-		ofstream outFile(cFile);
-		//outFile << "int main(int argc, char** argv){\n";
-		//print out the declarations(VARS),then the VARS inside <BLOCK>
+                ofstream outFile(cFile);
 		generateCode(outFile,parseTree);
 		outFile << "\treturn 0;\n";
 		outFile << "}";	
+	*/
 		return 0;	
 		
 	}
